@@ -7,7 +7,7 @@ public class IncidenteServiceMapImpl implements IncidenteService {
     private HashMap<Integer, Incidente> incidenteMap;
 
     public IncidenteServiceMapImpl() {
-        incidenteMap = new HashMap<Integer, Incidente>();
+        incidenteMap = new HashMap<>();
     }
 
     @Override
@@ -16,7 +16,7 @@ public class IncidenteServiceMapImpl implements IncidenteService {
     }
 
     @Override
-    public Collection<Incidente> getIncidente() {
+    public Collection<Incidente> getIncidentes() {
         return incidenteMap.values();
     }
 
@@ -48,43 +48,94 @@ public class IncidenteServiceMapImpl implements IncidenteService {
     @Override
     public Incidente changeEstadoIncidente(int id) {
 
-       // Incidente indicenteARetornar = new Incidente();
         for(Map.Entry<Integer, Incidente> entry : incidenteMap.entrySet()) {
-            int key = entry.getKey();
             Incidente value = entry.getValue();
 
             if (value.getId() == id) {
                 value.setEstado(Estado.RESUELTO);
-            //    indicenteARetornar = value;
+                return value;
             }
         }
-
-       // return indicenteARetornar;
         return null;
     }
 
     @Override
     public Collection<Incidente> getIncidentesAsignadosUsuario(int idUsuario) {
-        return null;
+
+        HashMap<Integer, Incidente> auxMap = new HashMap<>();
+
+        for(Map.Entry<Integer, Incidente> entry : incidenteMap.entrySet()) {
+            int key = entry.getKey();
+            Incidente value = entry.getValue();
+
+            if (value.getResponsable().getId() == idUsuario) {
+                auxMap.put(key, value);
+            }
+        }
+        return auxMap.values();
     }
 
     @Override
     public Collection<Incidente> getIncidentesCreadosUsuario(int idUsuario) {
-        return null;
+
+        HashMap<Integer, Incidente> auxMap = new HashMap<>();
+
+        for(Map.Entry<Integer, Incidente> entry : incidenteMap.entrySet()) {
+            int key = entry.getKey();
+            Incidente value = entry.getValue();
+
+            if (value.getReportador().getId() == idUsuario) {
+                auxMap.put(key, value);
+            }
+        }
+        return auxMap.values();
     }
 
     @Override
     public Collection<Incidente> getIncidentesProyecto(int idProyecto) {
-        return null;
+
+        HashMap<Integer, Incidente> auxMap = new HashMap<>();
+
+        for(Map.Entry<Integer, Incidente> entry : incidenteMap.entrySet()) {
+            int key = entry.getKey();
+            Incidente value = entry.getValue();
+
+            if (value.getProyecto().getId() == idProyecto) {
+                auxMap.put(key, value);
+            }
+        }
+        return auxMap.values();
     }
 
     @Override
     public Collection<Incidente> getIncidentesAbiertos() {
-        return null;
+
+        HashMap<Integer, Incidente> auxMap = new HashMap<>();
+
+        for(Map.Entry<Integer, Incidente> entry : incidenteMap.entrySet()) {
+            int key = entry.getKey();
+            Incidente value = entry.getValue();
+
+            if (value.getEstado() == Estado.ASIGNADO) {
+                auxMap.put(key, value);
+            }
+        }
+        return auxMap.values();
     }
 
     @Override
-    public Collection<Incidente> getIncidentesPCerrados() {
-        return null;
+    public Collection<Incidente> getIncidentesCerrados() {
+
+        HashMap<Integer, Incidente> auxMap = new HashMap<>();
+
+        for(Map.Entry<Integer, Incidente> entry : incidenteMap.entrySet()) {
+            int key = entry.getKey();
+            Incidente value = entry.getValue();
+
+            if (value.getEstado() == Estado.RESUELTO) {
+                auxMap.put(key, value);
+            }
+        }
+        return auxMap.values();
     }
 }
