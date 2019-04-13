@@ -6,7 +6,7 @@ public interface IncidenteService {
     public Collection<Incidente> getIncidente();
     public Incidente getIncidente(int id);
     public Incidente changeDescripcionIncidente (Incidente incidente) throws IncidenteException;
-    public Incidente changeEstadoIncidente (int id) throws IncidenteException;
+    public Incidente changeEstadoIncidente (int id);
     public Collection<Incidente> getIncidentesAsignadosUsuario (int idUsuario);
     public Collection<Incidente> getIncidentesCreadosUsuario (int idUsuario);
     public Collection<Incidente> getIncidentesProyecto (int idProyecto);

@@ -1,5 +1,6 @@
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public class IncidenteServiceMapImpl implements IncidenteService {
 
@@ -45,27 +46,21 @@ public class IncidenteServiceMapImpl implements IncidenteService {
     }
 
     @Override
-    public Incidente changeEstadoIncidente(int id) throws IncidenteException {
+    public Incidente changeEstadoIncidente(int id) {
 
-        try {
-            if (incidente.getId() == 0) {
-                throw new IncidenteException("El id del incidente no puede ser nulo.");
+       // Incidente indicenteARetornar = new Incidente();
+        for(Map.Entry<Integer, Incidente> entry : incidenteMap.entrySet()) {
+            int key = entry.getKey();
+            Incidente value = entry.getValue();
+
+            if (value.getId() == id) {
+                value.setEstado(Estado.RESUELTO);
+            //    indicenteARetornar = value;
             }
-            Incidente incidenteEditar = incidenteMap.get(incidente.getId());
-            // a partir de ahora, modifico
-
-            if (incidente.getDescripcion() != null) {
-                incidenteEditar.setDescripcion(incidente.getDescripcion());
-            }
-
-            return incidenteEditar;
-
-        } catch (Exception exception) {
-            throw new IncidenteException(exception.getMessage());
         }
 
-
-
+       // return indicenteARetornar;
+        return null;
     }
 
     @Override
