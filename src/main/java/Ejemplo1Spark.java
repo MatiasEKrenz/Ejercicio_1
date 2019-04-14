@@ -1,4 +1,7 @@
 import com.google.gson.Gson;
+
+import java.util.Date;
+
 import static spark.Spark.*;
 
 public class Ejemplo1Spark {
@@ -126,6 +129,26 @@ public class Ejemplo1Spark {
             } else {
                 return new Gson().toJson(new StandardResponse(StatusResponse.ERROR, "Error al borrar Proyecto, el mismo posee incidentes reportados."));
             }
+        });
+
+
+        /////////////////////////////////////////////////////////////////////
+
+        // Crear un incidente (pasar el id de usuario y el id del proyecto para asociarlos al incidente)
+        post("/proyecto", (request, response) -> {
+            response.type("application/json");
+
+            Incidente incidente = new Gson().fromJson(request.body(), Incidente.class);
+
+            incidente.setProyecto(proyectoService.getProyecto(request.attribute("idProyecto")));
+            incidente.setReportador(usuarioService.getUsuario(request.attribute("idUsrReportador")));
+            incidente.setResponsable(usuarioService.getUsuario(request.attribute("idUsrResponsable")));
+
+            incidente.setFechaDeCreacion(new Date());
+
+            incidenteService.createIncidente(incidente);
+
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
         });
 
         /*options("/usuario/:id", (request, response) -> {
