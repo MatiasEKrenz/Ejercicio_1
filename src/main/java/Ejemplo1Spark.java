@@ -1,5 +1,6 @@
-import com.google.gson.Gson;
+import com.google.gson.*;
 
+import java.lang.reflect.Type;
 import java.util.Date;
 
 import static spark.Spark.*;
@@ -14,6 +15,50 @@ public class Ejemplo1Spark {
         final IncidenteService incidenteService = new IncidenteServiceMapImpl();
 
         precarga(usuarioService, proyectoService, incidenteService);
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        JsonDeserializer<Proyecto> deserializer = new JsonDeserializer<Proyecto>() {
+            @Override
+            public Proyecto deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                JsonObject jsonObject = json.getAsJsonObject();
+
+                Proyecto proyecto = new Proyecto(
+                        jsonObject.get("id").getAsInt(),
+                        jsonObject.get("titulo").getAsString(),
+                        usuarioService.getUsuario(jsonObject.get("idUsuario").getAsInt())
+                );
+
+                return proyecto;
+            }
+        };
+
+        gsonBuilder.registerTypeAdapter(Proyecto.class, deserializer);
+
+
+        JsonDeserializer<Incidente> deserializerIncidente = new JsonDeserializer<Incidente>() {
+            @Override
+            public Incidente deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                JsonObject jsonObject = json.getAsJsonObject();
+
+                Incidente incidente = new Incidente(
+                        jsonObject.get("id").getAsInt(),
+                        Clasificacion.valueOf(jsonObject.get("clasificacion").getAsString()),
+                        jsonObject.get("descripcion").getAsString(),
+                        usuarioService.getUsuario(jsonObject.get("idUsrReportador").getAsInt()),
+                        usuarioService.getUsuario(jsonObject.get("idUsrResponsable").getAsInt()),
+                        Estado.valueOf(jsonObject.get("estado").getAsString()),
+                        proyectoService.getProyecto(jsonObject.get("idProyecto").getAsInt())
+                );
+
+                return incidente;
+            }
+        };
+
+        gsonBuilder.registerTypeAdapter(Incidente.class, deserializerIncidente);
+
+        Gson customGson = gsonBuilder.create();
+
 
         // Crear un usuario
         post("/usuario", (request, response) -> {
@@ -79,9 +124,7 @@ public class Ejemplo1Spark {
         // Crear un proyecto (pasar el id de usuario para asociarlo al proyecto)
         post("/proyecto", (request, response) -> {
             response.type("application/json");
-            Proyecto proyecto = new Gson().fromJson(request.body(), Proyecto.class);
-
-            proyecto.setPropietario(usuarioService.getUsuario(request.attribute("idUsuario")));
+            Proyecto proyecto = customGson.fromJson(request.body(), Proyecto.class);
 
             proyectoService.createProyect(proyecto);
 
@@ -139,15 +182,9 @@ public class Ejemplo1Spark {
         // Crear un incidente (pasar el id de usuario y el id del proyecto para asociarlos al incidente)
         post("/incidente", (request, response) -> {
             response.type("application/json");
-
-            Incidente incidente = new Gson().fromJson(request.body(), Incidente.class);
-
-            incidente.setProyecto(proyectoService.getProyecto(request.attribute("idProyecto")));
-            incidente.setReportador(usuarioService.getUsuario(request.attribute("idUsrReportador")));
-            incidente.setResponsable(usuarioService.getUsuario(request.attribute("idUsrResponsable")));
+            Incidente incidente = customGson.fromJson(request.body(), Incidente.class);
 
             incidente.setFechaDeCreacion(new Date());
-
             incidenteService.createIncidente(incidente);
 
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
