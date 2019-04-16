@@ -1,0 +1,265 @@
+{
+	"info": {
+		"_postman_id": "4c8054e9-d728-449f-9c72-bd71fd40559b",
+		"name": "Tests de API RESTful",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:4567/usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e3fc3bc4-30a0-47fe-9ce4-cd558e4dd03b",
+						"exec": [
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"SUCCESS\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": 4,\n\t\"nombre\": \"Pepito\",\n\t\"apellido\": \"Salazar\"\n}"
+				},
+				"url": {
+					"raw": "localhost:4567/usuario",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"usuario"
+					]
+				},
+				"description": "Comprobar la correcta creacion de un usuario"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4567/usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "16dfc0e6-4f69-4e50-942e-e8ba90107b93",
+						"exec": [
+							"pm.test(\"Comprobar usuario 1\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data[3].nombre).to.eql(\"Pepito\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:4567/usuario",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"usuario"
+					]
+				},
+				"description": "Test que comprueba si un usuario existente es correcto"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4567/usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6529cabd-0ac3-4b6d-b76d-1b735ee91fa3",
+						"exec": [
+							"pm.test(\"Cantidad de usuarios creados hasta el momento\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.length).to.eql(4);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:4567/usuario",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"usuario"
+					]
+				},
+				"description": "Cantidad de usuarios creados hasta el momento"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4567/usuario/3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "21d4209f-368c-45e2-986f-454765e67ca9",
+						"exec": [
+							"pm.test(\"Devolver un usuario en particular\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.apellido).to.eql(\"Apellido3\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:4567/usuario/3",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"usuario",
+						"3"
+					]
+				},
+				"description": "evolver un usuario en particular"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4567/usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ba13bf07-403a-4822-bc09-e5e9d5ff02a4",
+						"exec": [
+							"pm.test(\"Modificar un usuario\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"SUCCESS\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 3,\n    \"nombre\": \"Gehachei\",\n    \"apellido\": \"ApellidoNuevo\"\n}"
+				},
+				"url": {
+					"raw": "localhost:4567/usuario",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"usuario"
+					]
+				},
+				"description": "Modificar un usuario"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4567/usuario/3 Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "21d4209f-368c-45e2-986f-454765e67ca9",
+						"exec": [
+							"pm.test(\"Comprobar si se modifico un usuario correctamente\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.apellido).to.eql(\"ApellidoNuevo\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:4567/usuario/3",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"usuario",
+						"3"
+					]
+				},
+				"description": "evolver un usuario en particular"
+			},
+			"response": []
+		}
+	]
+}
