@@ -4,6 +4,12 @@ public class Proyecto {
     private String titulo;
     private Usuario propietario;
 
+    public Proyecto(int id, String titulo, Usuario propietario) {
+        this.id = id;
+        this.titulo = titulo;
+        this.propietario = propietario;
+    }
+
     public int getId() {
         return id;
     }

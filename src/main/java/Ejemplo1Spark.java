@@ -13,6 +13,8 @@ public class Ejemplo1Spark {
         final ProyectoService proyectoService = new ProyectoServiceMapImpl();
         final IncidenteService incidenteService = new IncidenteServiceMapImpl();
 
+        precarga(usuarioService, proyectoService, incidenteService);
+
         // Crear un usuario
         post("/usuario", (request, response) -> {
             response.type("application/json");
@@ -135,7 +137,7 @@ public class Ejemplo1Spark {
         /////////////////////////////////////////////////////////////////////
 
         // Crear un incidente (pasar el id de usuario y el id del proyecto para asociarlos al incidente)
-        post("/proyecto", (request, response) -> {
+        post("/incidente", (request, response) -> {
             response.type("application/json");
 
             Incidente incidente = new Gson().fromJson(request.body(), Incidente.class);
@@ -151,13 +153,84 @@ public class Ejemplo1Spark {
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
         });
 
-        /*options("/usuario/:id", (request, response) -> {
+        // Agregar descripcion (pasar el id de usuario y el id del proyecto para asociarlos al incidente)
+        post("/incidente/:id", (request, response) -> {
+            response.type("application/json");
+            incidenteService.getIncidente(Integer.parseInt(request.params(":id"))).setDescripcion(request.attribute("descripcion"));
 
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
+        });
+
+        // Cambiar estado de incidente a RESUELTO
+        put("/incidente/:id", (request, response) -> {
+            response.type("application/json");
+            incidenteService.changeEstadoIncidente(Integer.parseInt(request.params(":id")));
+
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
+        });
+
+
+        ///////////////////////////////////////////////////////
+
+        // Mostrar todos los proyectos de un usuario
+        get("/usuario/:id/proyectos", (request, response) -> {
+            //...
+            response.type("application/json");
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(proyectoService.getProyectosPropietario(Integer.parseInt(request.params(":id"))))));
+        });
+
+        // Incidentes asignados por un usuario
+        get("/usuario/:id/incidentes/asignados", (request, response) -> {
             response.type("application/json");
 
-            integranteService.deleteIntegrante(request.params(":id"));
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(incidenteService.getIncidentesAsignadosUsuario(Integer.parseInt(request.params(":id"))))));
+        });
 
-            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, (integranteService.integranteExist(request.params(":id")) ? "El integrante existe" : "El integrante no existe")));
-        });*/
+        // Incidentes creados por un usuario
+        get("/usuario/:id/incidentes/creados", (request, response) -> {
+            response.type("application/json");
+
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(incidenteService.getIncidentesCreadosUsuario(Integer.parseInt(request.params(":id"))))));
+        });
+
+        // Incidentes asociados a un proyecto
+        get("/proyecto/:id/incidentes", (request, response) -> {
+            response.type("application/json");
+
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(incidenteService.getIncidentesProyecto(Integer.parseInt(request.params(":id"))))));
+        });
+
+        // Incidentes abiertos
+        get("/incidente/abiertos", (request, response) -> {
+            response.type("application/json");
+
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(incidenteService.getIncidentesAbiertos())));
+        });
+
+        // Incidentes resueltos
+        get("/incidente/resueltos", (request, response) -> {
+            response.type("application/json");
+
+            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(incidenteService.getIncidentesCerrados())));
+        });
     }
+
+
+    private static void precarga(UsuarioService usuarioService, ProyectoService proyectoService, IncidenteService incidenteService) {
+        usuarioService.addUsuario(new Usuario(1, "Abece", "Apellido1"));
+        usuarioService.addUsuario(new Usuario(2, "Deeefe", "Apellido2"));
+        usuarioService.addUsuario(new Usuario(3, "Gehachei", "Apellido3"));
+
+        proyectoService.createProyect(new Proyecto(1, "Proyecto 1", usuarioService.getUsuario(1)));
+        proyectoService.createProyect(new Proyecto(2, "Proyecto 2", usuarioService.getUsuario(3)));
+
+        incidenteService.createIncidente(new Incidente(1, Clasificacion.NORMAL, "Incidente 1",
+                usuarioService.getUsuario(3), usuarioService.getUsuario(1), Estado.ASIGNADO,
+                proyectoService.getProyecto(1)));
+
+        incidenteService.createIncidente(new Incidente(2, Clasificacion.CRITICO, "Incidente 2",
+                usuarioService.getUsuario(3), usuarioService.getUsuario(2), Estado.RESUELTO,
+                proyectoService.getProyecto(2)));
+    }
+
 }
